@@ -1,0 +1,2 @@
+# eaws
+Emacs Aws Library
