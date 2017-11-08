@@ -36,7 +36,7 @@
 (require 'dash)
 (require 'eaws-mode)
 
-(declare-function eaws-maybe-make-margin-overlay 'eaws-log)
+(declare-function eaws-maybe-make-margin-overlay nil)
 (defvar eaws-keep-region-overlay)
 
 ;;; Options
@@ -664,7 +664,6 @@ anything this time around.
                    (&or [("eval" symbolp) &optional form form]
                         [symbolp &optional form form])
                    body)))
-  (message "hello")
   (let ((s (if (symbolp (car args))
                (pop args)
              (cl-gensym "section"))))
@@ -760,7 +759,7 @@ insert a newline character if necessary."
                 (propertize heading 'face 'eaws-section-heading)))))
   (unless (bolp)
     (insert ?\n))
-  (eaws-maybe-make-margin-overlay)
+  ;;(eaws-maybe-make-margin-overlay)
   (setf (eaws-section-content eaws-insert-section--current) (point-marker)))
 
 (defvar eaws-insert-headers--hook nil "For internal use only.")
