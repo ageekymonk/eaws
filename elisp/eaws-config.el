@@ -12,7 +12,6 @@
 ;; Keywords: aws
 ;; Homepage: https://github.com/ageekymonk/eaws
 
-
 ;; Eaws is free software; you can redistribute it and/or modify it
 ;; under the terms of the GNU General Public License as published by
 ;; the Free Software Foundation; either version 3, or (at your option)
@@ -35,10 +34,17 @@
 (require 'cl-lib)
 (require 's)
 
+;; Variables
+(defcustom eaws-profile "default"
+  "The AWS Profile name"
+  :group 'eaws-config
+  :type 'string
+  )
 
-(defvar eaws-profile
-  "default"
-  "AWS CLI Profile")
-
+(defcustom eaws-region "ap-southeast-2"
+  "The AWS Region name"
+  :group 'eaws-config
+  :type 'string
+  )
 
 (provide 'eaws-config)
