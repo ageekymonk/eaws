@@ -12,7 +12,6 @@
 ;; Keywords: aws
 ;; Homepage: https://github.com/ageekymonk/eaws
 
-
 ;; Eaws is free software; you can redistribute it and/or modify it
 ;; under the terms of the GNU General Public License as published by
 ;; the Free Software Foundation; either version 3, or (at your option)
@@ -31,3 +30,29 @@
 ;; Eaws is an console to manage aws resources.
 
 ;;; Code:
+
+(defcustom eaws-buffer-name-format "*%p:%m*"
+  "The format string used to name Eaws buffers.
+
+The following %-sequences are supported:
+`%p' The aws profile name
+`%m' The name of the major-mode, but with the `-mode' suffix
+     removed."
+  :group 'eaws-buffers
+  :type 'string)
+
+;; Functions
+
+(defun eaws-generate-buffer-name-default-function (mode &optional value)
+  "Generate buffer name for a MODE buffer.
+The returned name is based on `magit-buffer-name-format' and
+takes `magit-uniquify-buffer-names' and VALUE, if non-nil, into
+account."
+  (let ((m (substring (symbol-name mode) 0 -5))
+        (p eaws-config-profile)
+        )
+    (format-spec
+     eaws-buffer-name-format
+     `((?m . ,m)
+       (?p . ,p)
+       ))))
