@@ -32,26 +32,7 @@
 
 ;;; Code:
 
-(defcustom eaws-config-profile "default"
-  "The AWS Profile name"
-
-  :group 'eaws-config
-  :type 'string
-  )
-
-(defcustom eaws-buffer-name-format "*%p:%m*"
-  "The format string used to name Eaws buffers.
-
-The following %-sequences are supported:
-
-`%p' The aws profile name
-
-`%m' The name of the major-mode, but with the `-mode' suffix
-     removed."
-
-  :group 'eaws-buffers
-  :type 'string)
-
+;; keymap for eaws-mode
 (defvar eaws-mode-map
   (let ((map (make-keymap)))
     (suppress-keymap map t)
@@ -59,27 +40,20 @@ The following %-sequences are supported:
     map)
   "Parent keymap for all keymaps of modes derived from `eaws-mode'.")
 
+;; Mode
+(define-derived-mode eaws-mode special-mode "Eaws"
+  "Parent Major Mode from which all Eaws major mode inherit"
+  :group 'eaws-modes
+  )
+
+;; Functions
 (defun eaws-visit-thing ()
   "This is a placeholder command.
 Where applicable, section-specific keymaps bind another command
 which visits the thing at point."
   (interactive)
+  (message "%s" major-mode)
     (user-error "There is no thing at point that could be visited"))
-
-
-(defun eaws-generate-buffer-name-default-function (mode &optional value)
-  "Generate buffer name for a MODE buffer.
-The returned name is based on `magit-buffer-name-format' and
-takes `magit-uniquify-buffer-names' and VALUE, if non-nil, into
-account."
-  (let ((m (substring (symbol-name mode) 0 -5))
-        (p eaws-config-profile)
-        )
-    (format-spec
-     eaws-buffer-name-format
-     `((?m . ,m)
-       (?p . ,p)
-       ))))
 
 (defun eaws-mode-get-buffer (mode &optional create value)
       (or (--first (with-current-buffer it
@@ -96,11 +70,6 @@ account."
     buffer)
   )
 
-(define-derived-mode eaws-mode special-mode "Eaws"
-  "Parent Major Mode from which Eaws major mode inherit"
-  :group 'eaws-modes
-  )
-
 (defun eaws-refresh-buffer ()
   "Refresh the current eaws buffer"
   (let ((refresh (intern (format "%s-refresh-buffer"
@@ -111,6 +80,7 @@ account."
         (apply refresh nil))
       )))
 
+;;;###autoload
 (defun eaws-mode-setup (mode &rest args)
   "Setup Eaws Mode buffer"
   (eaws-mode-setup-internal mode args))
@@ -125,5 +95,4 @@ account."
       (eaws-refresh-buffer))
     ))
 
-;;; autoload
 (provide 'eaws-mode)
