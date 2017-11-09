@@ -48,9 +48,8 @@
 
 (defvar eaws-ec2-instance-status-section-map
   (let ((map (make-sparse-keymap)))
-    (progn
-      (define-key map [return] 'eaws-show-instance)
-      (define-key map "?" 'eaws-ec2-dispatch-popup))
+    (define-key map [return] 'eaws-ec2-show-instance)
+    (define-key map "?" 'eaws-ec2-dispatch-popup)
     map)
   "Keymap for the `ec2-instance-status' section.")
 
@@ -58,7 +57,14 @@
   "Eaws EC2 Mode"
   )
 
-;; hooks
+(defvar eaws-ec2-get-instances-command
+  (format "aws ec2 describe-instances --profile %s" eaws-profile)
+  "Command to list instances.")
+
+(defvar eaws-ec2-get-images-command
+  (format "aws ec2 describe-images --profile %s" eaws-profile)
+  "Command to list images.")
+
 (defcustom eaws-ec2-mode-hook nil
   "Eaws EC2 Mode hook"
   :group 'eaws-modes
@@ -88,8 +94,8 @@
   :setup-function 'eaws-dispatch-popup-setup
   :max-action-columns (lambda (heading)
                         (pcase heading
-                          ("EC2 Status Commands" 4)
-                          ("Essential commands" 1))))
+                          ("EC2 Instance Commands" 4)
+                          ("Status Commands" 1))))
 
 (defvar eaws-dispatch-popup-map
   (let ((map (make-sparse-keymap)))
@@ -121,14 +127,20 @@
   subnet-id vpc-id image-id security-groups
   launch-time)
 
-;; EC2 Commands
-(defvar eaws-ec2-get-instances-command
-  (format "aws ec2 describe-instances --profile %s" eaws-profile)
-  "Command to list instances.")
+(defun eaws-ec2-start-instance ()
+  "Start the ec2 instance, given the list of instance ids"
+  (interactive)
+  (let* ((command (format "aws ec2 start-instances --instance-ids %s" (eaws-section-value (eaws-current-section))))
+         ;;(output (eaws-run-command command))
+         )
+    (message-box command)
+    )
+  )
 
-(defvar eaws-ec2-get-images-command
-  (format "aws ec2 describe-images --profile %s" eaws-profile)
-  "Command to list images.")
+(defun eaws-ec2-show-instance (&optional args)
+  "Show a specific instance"
+  (interactive)
+  )
 
 (defun aws-ec2-get-instances-parser (input)
   "Extract instances from describe-instances.
@@ -158,9 +170,15 @@ Argument INPUT json input in string form."
              )
            instance-list)))
 
+(defun get-string-from-file (filePath)
+  "Return filePath's file content."
+  (with-temp-buffer
+    (insert-file-contents filePath)
+    (buffer-string)))
 (defun eaws-ec2-insert-instance-status ()
-  (let* ((output (eaws-run-command eaws-ec2-get-instances-command))
-         (instance-list (aws-ec2-get-instances-parser output)))
+  (let* ((instances-json (get-string-from-file "../instances.json"))
+         ;;(output (eaws-run-command eaws-ec2-get-instances-command))
+         (instance-list (aws-ec2-get-instances-parser instances-json)))
     (progn
     (--map (eaws-insert-section (ec2-instance-status (eaws-ec2-instance-id it))
              (insert (concat (format "%-40s" (s-truncate 30 (eaws-ec2-instance-name it)))

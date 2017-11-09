@@ -49,7 +49,7 @@ The returned name is based on `magit-buffer-name-format' and
 takes `magit-uniquify-buffer-names' and VALUE, if non-nil, into
 account."
   (let ((m (substring (symbol-name mode) 0 -5))
-        (p eaws-config-profile)
+        (p eaws-profile)
         )
     (format-spec
      eaws-buffer-name-format
