@@ -56,3 +56,9 @@ account."
      `((?m . ,m)
        (?p . ,p)
        ))))
+
+(defun eaws-run-command (command &optional args)
+  "Return the full json from running a command."
+  (with-temp-buffer
+    (shell-command command (current-buffer) nil)
+    (buffer-substring-no-properties (point-min) (point-max))))
